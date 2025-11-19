@@ -1,239 +1,127 @@
-let readyStatus = document.querySelector('#readyStatus')
-let notReadyStatus = document.querySelector('#notReadyStatus')
-let myForm = document.querySelector('#myForm')
-let contentArea = document.querySelector('#contentArea')
-let formPopover = document.querySelector('#formPopover')
-let createButton = document.querySelector('#createButton')
-let formHeading = document.querySelector('#formPopover h2')
+// Below we will use the Express Router to define a series of API endpoints.
+// Express will listen for API requests and respond accordingly
+import express from 'express'
+const router = express.Router()
 
-// Get form data and process each type of input
-// Prepare the data as JSON with a proper set of types
-// e.g. Booleans, Numbers, Dates
-const getFormData = () => {
-    // FormData gives a baseline representation of the form
-    // with all fields represented as strings
-    const formData = new FormData(myForm)
-    const json = Object.fromEntries(formData)
+// Set this to match the model name in your Prisma schema
+const model = 'tickets'
 
-    // Handle checkboxes, dates, and numbers
-    myForm.querySelectorAll('input').forEach(el => {
-        const value = json[el.name]
-        const isEmpty = !value || value.trim() === ''
+// Prisma lets NodeJS communicate with MongoDB
+// Let's import and initialize the Prisma client
+// See also: https://www.prisma.io/docs
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
 
-        // Represent checkboxes as a Boolean value (true/false)
-        if (el.type === 'checkbox') {
-            json[el.name] = el.checked
-        }
-        // Represent number and range inputs as actual numbers
-        else if (el.type === 'number' || el.type === 'range') {
-            json[el.name] = isEmpty ? null : Number(value)
-        }
-        // Represent all date inputs in ISO-8601 DateTime format
-        else if (el.type === 'date') {
-            json[el.name] = isEmpty ? null : new Date(value).toISOString()
-        }
-    })
-    return json
-}
+// Connect to the database
+prisma.$connect().then(() => {
+    console.log('Prisma connected to MongoDB')
+}).catch(err => {
+    console.error('Failed to connect to MongoDB:', err)
+})
 
+// ----- CREATE (POST) -----
+// Create a new record for the configured model
+// This is the 'C' of CRUD
+router.post('/data', async (req, res) => {
+    try {
+        // Remove the id field from request body if it exists
+        // MongoDB will auto-generate an ID for new records
+        const { id, ...createData } = req.body
 
-// listen for form submissions  
-myForm.addEventListener('submit', async event => {
-    // prevent the page from reloading when the form is submitted.
-    event.preventDefault()
-    const data = getFormData()
-    await saveItem(data)
-    myForm.reset()
-    formPopover.hidePopover()
+        const created = await prisma[model].create({
+            data: createData
+        })
+        res.status(201).send(created)
+    } catch (err) {
+        console.error('POST /data error:', err)
+        res.status(500).send({ error: 'Failed to create record', details: err.message || err })
+    }
 })
 
 
-// Save item (Create or Update)
-const saveItem = async (data) => {
-    console.log('Saving:', data)
-
-    // Determine if this is an update or create
-    const endpoint = data.id ? `/data/${data.id}` : '/data'
-    const method = data.id ? "PUT" : "POST"
-
-    const options = {
-        method: method,
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    }
-
+// ----- READ (GET) list ----- 
+router.get('/data', async (req, res) => {
     try {
-        const response = await fetch(endpoint, options)
-
-        if (!response.ok) {
-            try {
-                const errorData = await response.json()
-                console.error('Error:', errorData)
-                alert(errorData.error || response.statusText)
-            }
-            catch (err) {
-                console.error(response.statusText)
-                alert('Failed to save: ' + response.statusText)
-            }
-            return
-        }
-
-        const result = await response.json()
-        console.log('Saved:', result)
-
-
-        // Refresh the data list
-        getData()
+        // fetch first 100 records from the database with no filter
+        const result = await prisma[model].findMany({
+            take: 100
+        })
+        res.send(result)
+    } catch (err) {
+        console.error('GET /data error:', err)
+        res.status(500).send({ error: 'Failed to fetch records', details: err.message || err })
     }
-    catch (err) {
-        console.error('Save error:', err)
-        alert('An error occurred while saving')
-    }
-}
+})
 
 
-// Edit item - populate form with existing data
-const editItem = (data) => {
-    console.log('Editing:', data)
 
-    // Populate the form with data to be edited
-    Object.keys(data).forEach(field => {
-        const element = myForm.elements[field]
-        if (element) {
-            if (element.type === 'checkbox') {
-                element.checked = data[field]
-            } else if (element.type === 'date') {
-                // Extract yyyy-mm-dd from ISO date string (avoids timezone issues)
-                element.value = data[field] ? data[field].substring(0, 10) : ''
-            } else {
-                element.value = data[field]
-            }
-        }
-    })
-
-    // Update the heading to indicate edit mode
-    formHeading.textContent = 'Edit Concert Ticket'
-
-    // Show the popover
-    formPopover.showPopover()
-}
-
-// Delete item
-const deleteItem = async (id) => {
-    if (!confirm('Are you sure you want to delete this cat?')) {
-        return
-    }
-
-    const endpoint = `/data/${id}`
-    const options = { method: "DELETE" }
-
+// ----- findMany() with search ------- 
+// Accepts optional search parameter to filter by name field
+// See also: https://www.prisma.io/docs/orm/reference/prisma-client-reference#examples-7
+router.get('/search', async (req, res) => {
     try {
-        const response = await fetch(endpoint, options)
-
-        if (response.ok) {
-            const result = await response.json()
-            console.log('Deleted:', result)
-            // Refresh the data list
-            getData()
-        }
-        else {
-            const errorData = await response.json()
-            alert(errorData.error || 'Failed to delete item')
-        }
-    } catch (error) {
-        console.error('Delete error:', error)
-        alert('An error occurred while deleting')
+        // get search terms from query string, default to empty string
+        const searchTerms = req.query.terms || ''
+        // fetch the records from the database
+        const result = await prisma[model].findMany({
+            where: {
+                concertName: {
+                    contains: searchTerms,
+                    mode: 'insensitive'  // case-insensitive search
+                }
+            },
+            orderBy: { name: 'asc' },
+            take: 10
+        })
+        res.send(result)
+    } catch (err) {
+        console.error('GET /search error:', err)
+        res.status(500).send({ error: 'Search failed', details: err.message || err })
     }
-}
+})
 
 
-const calendarWidget = (date) => {
-    if (!date) return ''
-    const month = new Date(date).toLocaleString("en-CA", { month: 'short', timeZone: "UTC" })
-    const day = new Date(date).toLocaleString("en-CA", { day: '2-digit', timeZone: "UTC" })
-    const year = new Date(date).toLocaleString("en-CA", { year: 'numeric', timeZone: "UTC" })
-    return ` <div class="calendar">
-                <div class="born"><img src="./assets/birthday.svg" /></div>
-                <div class="month">${month}</div>
-                <div class="day">${day}</div> 
-                <div class="year">${year}</div>
-            </div>`
+// ----- UPDATE (PUT) -----
+// Listen for PUT requests
+// respond by updating a particular record in the database
+// This is the 'U' of CRUD
+// After updating the database we send the updated record back to the frontend.
+router.put('/data/:id', async (req, res) => {
+    try {
+        // Remove the id from the request body if it exists
+        // The id should not be in the data payload for updates
+        const { id, ...updateData } = req.body
 
-}
+        // Prisma update returns the updated version by default
+        const updated = await prisma[model].update({
+            where: { id: req.params.id },
+            data: updateData
+        })
+        res.send(updated)
+    } catch (err) {
+        console.error('PUT /data/:id error:', err)
+        res.status(500).send({ error: 'Failed to update record', details: err.message || err })
+    }
+})
 
-// Render a single item
-const renderItem = (item) => {
-    const div = document.createElement('div')
-    div.classList.add('item-card')
-    div.setAttribute('data-id', item.id)
-
-    const template = /*html*/`
-    <div class="item-heading">
-      <h3>${item.concertName || 'Untitled Concert'}</h3>
-      <div class="microchip-info">
-        ${item.artist || '<i>Unknown artist</i>'}
-      </div>
-    </div>
-
-    <div class="item-info">
-      <div class="left">
-        <p><strong>Artist:</strong> ${item.artist || '-'}</p>
-        <p><strong>Venue:</strong> ${item.venue || '-'}</p>
-        <p><strong>City:</strong> ${item.city || '-'}</p>
-        ${calendarWidget(item.concertDate)}
-      </div>
-
-      <div class="stats">
-        <div class="stat">
-          <span>Ticket Type</span>
-          <span>${item.ticketType || '-'}</span>
-        </div>
-        <div class="stat">
-          <span>Price</span>
-          <span>${item.price ? '$' + Number(item.price).toFixed(2) : '-'}</span>
-        </div>
-        <div class="stat">
-          <span>Excitement</span>
-          <meter max="10" min="0" value="${item.hypeLevel || 0}"></meter>
-        </div>
-      </div>
-    </div>
-
-    <div class="item-info">
-      <p><strong>Seat:</strong> ${item.seatInfo || '-'}</p>
-      <p><strong>Order #:</strong> ${item.orderNumber || '-'}</p>
-      <p><strong>Platform:</strong> ${item.platform || '-'}</p>
-      <p><strong>Status:</strong> ${item.isAttended ? 'Already attended' : 'Upcoming / Not yet'}</p>
-    </div>
-
-    <section class="description" style="${item.notes ? '' : 'display:none;'}">
-      <p>${item.notes}</p>
-    </section>
-
-    <div class="item-actions">
-      <button class="edit-btn">Edit</button>
-      <button class="delete-btn">Delete</button>
-    </div>
-    `
-
-    div.innerHTML = DOMPurify.sanitize(template)
-
-    // Buttons
-    div.querySelector('.edit-btn').addEventListener('click', () => editItem(item))
-    div.querySelector('.delete-btn').addEventListener('click', () => deleteItem(item.id))
-
-    return div
-}
+// ----- DELETE -----
+// Listen for DELETE requests
+// respond by deleting a particular record in the database
+// This is the 'D' of CRUD
+router.delete('/data/:id', async (req, res) => {
+    try {
+        const result = await prisma[model].delete({
+            where: { id: req.params.id }
+        })
+        res.send(result)
+    } catch (err) {
+        console.error('DELETE /data/:id error:', err)
+        res.status(500).send({ error: 'Failed to delete record', details: err.message || err })
+    }
+})
 
 
-// Revert to the default form title on reset
-myForm.addEventListener('reset', () => formHeading.textContent = 'Add a Concert Ticket')
+// export the api routes for use elsewhere in our app 
+// (e.g. in index.js )
+export default router;
 
-// Reset the form when the create button is clicked. 
-createButton.addEventListener('click', myForm.reset())
-
-// Load initial data
-getData()
