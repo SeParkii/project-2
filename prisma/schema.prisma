@@ -7,14 +7,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model cats {
-  id          String?   @id @default(auto()) @map("_id") @db.ObjectId
-  description String?
-  eventName   String?
-  eventDate   DateTime @db.Date
-  city        String?
-  venue       String?
-  seatNumber  String?
-  price       Float
-  isSold      Boolean  @default(false)
+model tickets {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+
+  concertName   String?
+  artist        String?
+  venue         String?
+  city          String?
+
+  concertDate   DateTime? @db.Date
+  startTime     String?
+
+  ticketType    String?
+  price         Float?
+  seatInfo      String?
+  orderNumber   String?
+
+  platform      String?
+
+  isAttended    Boolean?
+  isWithFriends Boolean?
+
+  hypeLevel     Int?
+  notes         String?
 }
+
