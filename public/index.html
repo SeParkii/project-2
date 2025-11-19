@@ -5,10 +5,10 @@
   <meta charset="utf-8" />
   <meta
     name="viewport"
-    content="width=device-width initial-scale=1"
+    content="width=device-width, initial-scale=1"
   />
 
-  <title>Managing Data</title>
+  <title>Concert Ticket Manager</title>
 
   <link
     rel="preconnect"
@@ -28,110 +28,332 @@
     href="style.css"
   />
 
-  <!--  DOMPurify cleans up HTML to prevent XSS attacks
-  https://www.jsdelivr.com/package/npm/dompurify  -->
+  <!--  DOMPurify cleans up HTML to prevent XSS attacks -->
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.3.0/dist/purify.min.js"></script>
 
 </head>
 
 <body>
   <header>
-    <h1>Managing Data</h1>
-    <h4>CRUD: a full data lifecycle</h4>
+    <h1>Concert Ticket Manager</h1>
+    <h4>CRUD: Save, edit, and track your concerts</h4>
   </header>
+
   <section id="status">
     <p id="readyStatus">✅ MongoDB is Ready</p>
-    <p id="notReadyStatus">❌ MongoDB is not connected. Please check your connection string in <code>.env</code> file.
+    <p id="notReadyStatus">
+      ❌ MongoDB is not connected. Please check your connection string in
+      <code>.env</code> file.
     </p>
   </section>
+
+  <!-- 🔘 BUTTON THAT OPENS THE FORM POPOVER -->
   <button
-  id="createButton"
-  popovertarget="formPopover"
->Add New Ticket</button>
+    id="createButton"
+    popovertarget="formPopover"
+  >
+    Create New Ticket
+  </button>
 
-<div
-  id="formPopover"
-  popover
->
-  <h2>Share a Ticket</h2>
-  <p>Share your concert ticket with the community</p>
-  <form id="myForm">
-    <!-- Hidden field to store ID for updates -->
-    <input type="hidden" id="ticketId" />
+  <!-- 🎫 POPOVER WITH THE FORM -->
+  <div
+    id="formPopover"
+    popover
+  >
+    <h2 id="formHeading">🎫 Add a Concert Ticket</h2>
+    <p>Store details about a concert you’re going to or have attended.</p>
 
-    <label for="description">Event Name:</label>
-    <input type="text" id="description" required />
+    <form id="myForm">
+      <!-- Hidden field to store ID for updates -->
+      <input
+        type="hidden"
+        name="id"
+        id="id"
+      />
 
-    <label for="eventName">Event Name:</label>
-    <input type="text" id="eventName" required />
+      <fieldset>
+        <label for="concertName">Concert / Tour Name</label>
+        <input
+          required
+          type="text"
+          name="concertName"
+          id="concertName"
+          placeholder="e.g. The Starry Night Tour"
+          autocomplete="off"
+        />
+        <small class="validation">Concert name is required</small>
+      </fieldset>
 
-    <label for="eventDate">Event Date:</label>
-    <input type="datetime-local" id="eventDate" required />
+      <fieldset>
+        <label for="artist">Artist / Band</label>
+        <input
+          required
+          type="text"
+          name="artist"
+          id="artist"
+          placeholder="e.g. Taylor Swift"
+          autocomplete="off"
+        />
+        <small class="validation">Artist / band is required</small>
+      </fieldset>
 
-    <label for="city">Venue:</label>
-    <input type="text" id="city" required />
+      <fieldset>
+        <label for="venue">Venue</label>
+        <input
+          type="text"
+          name="venue"
+          id="venue"
+          placeholder="e.g. Scotiabank Arena"
+          autocomplete="off"
+        />
+      </fieldset>
 
-    <label for="venue">Venue:</label>
-    <input type="text" id="venue" required />
+      <fieldset>
+        <label for="city">City</label>
+        <input
+          type="text"
+          name="city"
+          id="city"
+          placeholder="e.g. Toronto, ON"
+          autocomplete="off"
+        />
+      </fieldset>
 
-    <label for="seatNumber">Seat Number:</label>
-    <input type="text" id="seatNumber" />
+      <fieldset>
+        <label for="concertDate">Concert Date</label>
+        <input
+          type="date"
+          name="concertDate"
+          id="concertDate"
+        />
+      </fieldset>
 
-    <label for="price">Price:</label>
-    <input type="number" id="price" step="0.01" required />
+      <fieldset>
+        <label for="startTime">Start Time</label>
+        <input
+          type="time"
+          name="startTime"
+          id="startTime"
+        />
+      </fieldset>
 
-    <button type="submit">Submit</button>
-  </form>
-</div>
+      <fieldset>
+        <label for="ticketType">Ticket Type</label>
+        <select
+          name="ticketType"
+          id="ticketType"
+        >
+          <option
+            value=""
+            disabled
+            selected
+          >Select a ticket type</option>
+          <optgroup label="General">
+            <option value="General Admission">General Admission</option>
+            <option value="Seated">Seated</option>
+            <option value="Balcony">Balcony</option>
+          </optgroup>
+          <optgroup label="Premium">
+            <option value="VIP">VIP</option>
+            <option value="Floor">Floor</option>
+            <option value="Meet & Greet">Meet &amp; Greet</option>
+          </optgroup>
+          <optgroup label="Other">
+            <option value="Resale">Resale</option>
+            <option value="Other">Other</option>
+          </optgroup>
+        </select>
+      </fieldset>
+
+      <fieldset>
+        <label for="price">Ticket Price (in CAD)</label>
+        <small>Use numbers only</small>
+        <input
+          type="number"
+          name="price"
+          id="price"
+          min="0"
+          step="0.01"
+          placeholder="e.g. 129.99"
+        />
+      </fieldset>
+
+      <fieldset>
+        <label for="seatInfo">Section / Row / Seat</label>
+        <input
+          type="text"
+          name="seatInfo"
+          id="seatInfo"
+          placeholder="e.g. Sec 112, Row F, Seat 8"
+          autocomplete="off"
+        />
+      </fieldset>
+
+      <fieldset>
+        <label for="orderNumber">Order / Ticket Number</label>
+        <small>Optional, helps you find your ticket later</small>
+        <input
+          type="text"
+          name="orderNumber"
+          id="orderNumber"
+          placeholder="e.g. TM-1234-5678"
+          autocomplete="off"
+        />
+      </fieldset>
+
+      <fieldset>
+        <legend>Purchase Platform</legend>
+        <small>Where did you buy this ticket?</small>
+        <label for="ticketmaster">
+          <input
+            type="radio"
+            id="ticketmaster"
+            name="platform"
+            value="Ticketmaster"
+          />
+          <span>Ticketmaster</span>
+        </label>
+        <label for="axs">
+          <input
+            type="radio"
+            id="axs"
+            name="platform"
+            value="AXS"
+          />
+          <span>AXS</span>
+        </label>
+        <label for="officialSite">
+          <input
+            type="radio"
+            id="officialSite"
+            name="platform"
+            value="Official Site"
+          />
+          <span>Official Site</span>
+        </label>
+        <label for="resale">
+          <input
+            type="radio"
+            id="resale"
+            name="platform"
+            value="Resale"
+          />
+          <span>Resale</span>
+        </label>
+        <label for="platformOther">
+          <input
+            type="radio"
+            id="platformOther"
+            name="platform"
+            value="Other"
+          />
+          <span>Other</span>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Attendance</legend>
+        <label for="isAttended">
+          <input
+            type="checkbox"
+            name="isAttended"
+            id="isAttended"
+          />
+          <span>I already attended this concert</span>
+        </label>
+        <label for="isWithFriends">
+          <input
+            type="checkbox"
+            name="isWithFriends"
+            id="isWithFriends"
+          />
+          <span>Going / went with friends</span>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <label for="hypeLevel">Excitement Level</label>
+        <small>How hyped are you for this show?</small>
+        <input
+          type="range"
+          min="0"
+          max="10"
+          name="hypeLevel"
+          id="hypeLevel"
+        />
+      </fieldset>
+
+      <fieldset>
+        <label for="notes">Notes</label>
+        <small>Special memories, expectations, or details (minimum 10 characters).</small>
+        <textarea
+          placeholder="e.g. First time seeing them live, hoping they play my favourite song..."
+          name="notes"
+          id="notes"
+          rows="5"
+          cols="30"
+          minlength="10"
+        ></textarea>
+        <small class="validation">Notes must be at least 10 characters.</small>
+      </fieldset>
+
+      <!-- 🔘 BUTTONS THAT SUBMIT OR CANCEL -->
+      <fieldset>
+        <button
+          class="save"
+          type="submit"
+        >
+          Save
+        </button>
+        <button
+          class="cancel"
+          type="button"
+          popovertarget="formPopover"
+          popovertargetaction="hide"
+        >
+          Cancel
+        </button>
+      </fieldset>
+    </form>
+  </div>
 
   <main>
-    <h2>🐈 Noteworthy Cats</h2>
+    <h2>🎵 Your Concert Tickets</h2>
     <section id="contentArea"></section>
   </main>
 
   <section id="intro">
     <h3>About</h3>
-    <p>Previously we explored approaches to <a
-        href="https://github.com/ixd-system-design/API-Endpoints-for-Publishing-and-Searching"
-      >Publishing Data</a> and <a href="https://github.com/ixd-system-design/Collecting-Data">Collecting Data</a> by
-      means of API Endpoints (backend) and HTML forms (frontend). Having thus addressed the first two letters of
-      <a href="https://developer.mozilla.org/en-US/docs/Glossary/CRUD">CRUD</a> ("Create" and Read"), let's now
-      implement the last two letters as well ("Update" and "Delete"). This will
-      allow us to manage the full lifecycle of data records in our database.
-    </p>
-    <p>In order to operate on existing documents, we need to identify them by ID. The following two endpoints will
-      assume that we pass along the ID of the item to be updated or deleted:
-    <ol>
-      <li>An Express endpoint listens for HTTP <a
-          href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/PUT"
-        >PUT</a> requests, with an ID parameter and a body payload (the updated data). Prisma
-        finds the corresponding document in the database and replaces it with the new data.</li>
-      <li>An Express endpoint listens for HTTP <a
-          href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/PUT"
-        >DELETE</a> requests, with an ID paramater passed along. Prisma finds the corresponding document and
-        removes it from the database.</li>
-    </ol>
+    <p>
+      This page lets you manage a collection of concert tickets using full
+      <a href="https://developer.mozilla.org/en-US/docs/Glossary/CRUD">CRUD</a> operations:
+      Create, Read, Update, and Delete.
     </p>
     <p>
-      To support these new operations on the frontend, we have adjusted the form behaviour. When editing an item, the
-      ID of the item is stored in a hidden input field. This allows us to track which item is being edited, and send
-      the correct ID to the backend when submitting updates. We also use the ID in the display template, so that the
-      Edit and Delete buttons can function correctly, and so that we can identify which item to remove when deleting.
+      Instead of cats, our database now stores concert tickets. Each ticket is one document
+      in MongoDB with fields such as concert name, artist, venue, date, seat details, and price.
     </p>
-
-    <h3>Learning Prompts</h3>
-    <p>Can you add a connection string to the NodeJS environment (e.g. .env file) for your own MongoDB Atlas Cluster?
+    <ol>
+      <li>
+        Use the <strong>Create New Ticket</strong> button to open the form and add a new concert.
+      </li>
+      <li>
+        Existing tickets will appear in the list below. You can edit or delete them with the
+        buttons that your JavaScript will generate for each record.
+      </li>
+      <li>
+        On the backend, Express endpoints listen for HTTP requests (GET, POST, PUT, DELETE)
+        and Prisma talks to MongoDB.
+      </li>
+    </ol>
+    <p>
+      By connecting the form, the display template, and the API endpoints, you can track all the concerts
+      you’ve gone to (or plan to go to) in one place.
     </p>
-    <p>Use MongoDB Compass to verify that your data collection form is working. </p>
-    <p>Try out all CRUD operations: Create a new cat, Edit an existing cat by clicking the Edit button, and Delete a cat
-      you no longer need.</p>
-    <p>Explore the API endpoints in your browser: visit /data to see all cats in JSON format, or try /search?terms=Sofia
-      to search for specific cats.</p>
   </section>
 
   <footer>
-    Created by <a href="https://nsitu.ca">Harold Sikkema</a> in the context of
-    Systems Design in the Interaction Design program at Sheridan College.
+    Created in the context of Systems Design in the Interaction Design program at Sheridan College.
   </footer>
 
   <script
