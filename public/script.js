@@ -115,7 +115,7 @@ const editItem = (data) => {
     })
 
     // Update the heading to indicate edit mode
-    formHeading.textContent = 'Edit Concert Ticket'
+    formHeading.textContent = ''
 
     // Show the popover
     formPopover.showPopover()
@@ -170,64 +170,106 @@ const renderItem = (item) => {
     div.classList.add('item-card')
     div.setAttribute('data-id', item.id)
 
-    const template = /*html*/`
+    const template = /*html*/`  
     <div class="item-heading">
-      <h3>${item.concertName || 'Untitled Concert'}</h3>
-      <div class="microchip-info">
-        ${item.artist || '<i>Unknown artist</i>'}
-      </div>
+        <h3> ${item.name} </h3>
+        <div class="microchip-info">
+            <img src="./assets/chip.svg" /> ${item.microchip || '<i>???</i>'} 
+        </div>  
+    </div>
+    <div class="item-info"> 
+        <div class="item-icon" style="
+            background: linear-gradient(135deg, 
+            ${item.primaryColor} 0%, 
+            ${item.primaryColor} 40%, 
+            ${item.secondaryColor} 60%, 
+            ${item.secondaryColor} 100%); 
+        ">
+        </div> 
+        <div class="stats">
+            <div class="stat">
+                <span>Playfulness</span>
+                <meter max="10" min="0" value="${item.playfulness || 0}"></meter> 
+            </div>
+            <div class="stat">
+                <span>Appetite</span>
+                <meter max="10" min="0" value="${item.appetite || 0}"></meter> 
+            </div>
+        </div> 
+            
+         ${calendarWidget(item.birthDate)}
+    </div>
+        
+    <div class="item-info">  
+        <section class="breed" style="${item.breed ? '' : 'display:none;'}">  
+            <img src="./assets/ribbon.svg" />  ${item.breed}
+        </section>
+        <section class="food" style="${item.food ? '' : 'display:none;'}">
+             <img src="./assets/${item.food}.svg" /> <span>${item.food} food</span>
+        </section> 
+        <section class="adoption">
+            <img src="./assets/${item.isAdopted ? 'adopted' : 'paw'}.svg" />
+            ${item.isAdopted ? 'Adopted' : 'Available'}
+        </section> 
     </div>
 
-    <div class="item-info">
-      <div class="left">
-        <p><strong>Artist:</strong> ${item.artist || '-'}</p>
-        <p><strong>Venue:</strong> ${item.venue || '-'}</p>
-        <p><strong>City:</strong> ${item.city || '-'}</p>
-        ${calendarWidget(item.concertDate)}
-      </div>
-
-      <div class="stats">
-        <div class="stat">
-          <span>Ticket Type</span>
-          <span>${item.ticketType || '-'}</span>
-        </div>
-        <div class="stat">
-          <span>Price</span>
-          <span>${item.price ? '$' + Number(item.price).toFixed(2) : '-'}</span>
-        </div>
-        <div class="stat">
-          <span>Excitement</span>
-          <meter max="10" min="0" value="${item.hypeLevel || 0}"></meter>
-        </div>
-      </div>
-    </div>
-
-    <div class="item-info">
-      <p><strong>Seat:</strong> ${item.seatInfo || '-'}</p>
-      <p><strong>Order #:</strong> ${item.orderNumber || '-'}</p>
-      <p><strong>Platform:</strong> ${item.platform || '-'}</p>
-      <p><strong>Status:</strong> ${item.isAttended ? 'Already attended' : 'Upcoming / Not yet'}</p>
-    </div>
-
-    <section class="description" style="${item.notes ? '' : 'display:none;'}">
-      <p>${item.notes}</p>
+    <section class="description" style="${item.description ? '' : 'display:none;'}">  
+        <p>${item.description}</p>
     </section>
 
-    <div class="item-actions">
-      <button class="edit-btn">Edit</button>
-      <button class="delete-btn">Delete</button>
-    </div>
+        
+           
+        <div class="item-actions">
+            <button class="edit-btn">Edit</button>
+            <button class="delete-btn">Delete</button>
+        </div>
     `
+    div.innerHTML = DOMPurify.sanitize(template);
 
-    div.innerHTML = DOMPurify.sanitize(template)
-
-    // Buttons
+    // Add event listeners to buttons
     div.querySelector('.edit-btn').addEventListener('click', () => editItem(item))
     div.querySelector('.delete-btn').addEventListener('click', () => deleteItem(item.id))
 
     return div
 }
 
+// fetch items from API endpoint and populate the content div
+const getData = async () => {
+    try {
+        const response = await fetch('/data')
+
+        if (response.ok) {
+            readyStatus.style.display = 'block'
+            notReadyStatus.style.display = 'none'
+
+            const data = await response.json()
+            console.log('Fetched data:', data)
+
+            if (data.length == 0) {
+                contentArea.innerHTML = '<p><i>No data found in the database.</i></p>'
+                return
+            }
+            else {
+                contentArea.innerHTML = ''
+                data.forEach(item => {
+                    const itemDiv = renderItem(item)
+                    contentArea.appendChild(itemDiv)
+                })
+            }
+        }
+        else {
+            // If the request failed, show the "not ready" status
+            // to inform users that there may be a database connection issue
+            notReadyStatus.style.display = 'block'
+            readyStatus.style.display = 'none'
+            createButton.style.display = 'none'
+            contentArea.style.display = 'none'
+        }
+    } catch (error) {
+        console.error('Error fetching data:', error)
+        notReadyStatus.style.display = 'block'
+    }
+}
 
 // Revert to the default form title on reset
 myForm.addEventListener('reset', () => formHeading.textContent = 'Add a Concert Ticket')
