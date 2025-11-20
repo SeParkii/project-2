@@ -36,7 +36,7 @@
 <body>
   <header>
     <h1>Concert Ticket Manager</h1>
-    <h4>CRUD: Save, edit, and track your concerts</h4>
+    <h4>Allows you to add the concert ticket’s details by recording all the concerts that you have went to before.</h4>
   </header>
 
   <section id="status">
@@ -52,7 +52,7 @@
     id="createButton"
     popovertarget="formPopover"
   >
-    Create New Ticket
+    Add New Event
   </button>
 
   <!-- 🎫 POPOVER WITH THE FORM -->
@@ -60,7 +60,7 @@
     id="formPopover"
     popover
   >
-    <h2 id="formHeading">🎫 Add a Concert Ticket</h2>
+    <h2 id="formHeading">Concert Ticket Details</h2>
     <p>Store details about a concert you’re going to or have attended.</p>
 
     <form id="myForm">
@@ -220,12 +220,12 @@
       Create, Read, Update, and Delete.
     </p>
     <p>
-      Instead of cats, our database now stores concert tickets. Each ticket is one document
+      Our database stores the detailed information about every collected concert tickets that are saved from the user. Each ticket is one document
       in MongoDB with fields such as concert name, artist, venue, date, seat details, and price.
     </p>
     <ol>
       <li>
-        Use the <strong>Create New Ticket</strong> button to open the form and add a new concert.
+        Use the <strong>Add New Event</strong> button to open the form and add a new concert.
       </li>
       <li>
         Existing tickets will appear in the list below. You can edit or delete them with the
