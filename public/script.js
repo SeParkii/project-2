@@ -123,7 +123,7 @@ const editItem = (data) => {
 
 // Delete item
 const deleteItem = async (id) => {
-    if (!confirm('Are you sure you want to delete this cat?')) {
+    if (!confirm('Are you sure you want to delete this ticket?')) {
         return
     }
 
@@ -195,18 +195,17 @@ const renderItem = (item) => {
           <span>Price</span>
           <span>${item.price ? '$' + Number(item.price).toFixed(2) : '-'}</span>
         </div>
-        <div class="stat">
-          <span>Excitement</span>
-          <meter max="10" min="0" value="${item.hypeLevel || 0}"></meter>
-        </div>
+                <div class="stat">
+                    <span>Start Time</span>
+                    <span>${item.startTime || '-'}</span>
+                </div>
       </div>
     </div>
 
     <div class="item-info">
-      <p><strong>Seat:</strong> ${item.seatInfo || '-'}</p>
-      <p><strong>Order #:</strong> ${item.orderNumber || '-'}</p>
-      <p><strong>Platform:</strong> ${item.platform || '-'}</p>
-      <p><strong>Status:</strong> ${item.isAttended ? 'Already attended' : 'Upcoming / Not yet'}</p>
+    <p><strong>Seat:</strong> ${item.seatInfo || '-'}</p>
+    <p><strong>Start Time:</strong> ${item.startTime || '-'}</p>
+    <p><strong>Status:</strong> ${item.concertDate ? (new Date(item.concertDate) < new Date() ? 'Past' : 'Upcoming') : '-'}</p>
     </div>
 
     <section class="description" style="${item.notes ? '' : 'display:none;'}">
@@ -275,4 +274,7 @@ const getData = async () => {
 // Load initial data
 getData()
 
+
+git config --global user.name "SeParkii"
+git config --global user.email "yet@sheridancollege.ca"
 
