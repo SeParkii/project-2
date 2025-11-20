@@ -70,7 +70,7 @@
         name="id"
         id="id"
       />
-
+    
       <fieldset>
         <label for="concertName">Concert / Tour Name</label>
         <input
@@ -83,7 +83,7 @@
         />
         <small class="validation">Concert name is required</small>
       </fieldset>
-
+    
       <fieldset>
         <label for="artist">Artist / Band</label>
         <input
@@ -96,7 +96,7 @@
         />
         <small class="validation">Artist / band is required</small>
       </fieldset>
-
+    
       <fieldset>
         <label for="venue">Venue</label>
         <input
@@ -107,7 +107,7 @@
           autocomplete="off"
         />
       </fieldset>
-
+    
       <fieldset>
         <label for="city">City</label>
         <input
@@ -118,7 +118,7 @@
           autocomplete="off"
         />
       </fieldset>
-
+    
       <fieldset>
         <label for="concertDate">Concert Date</label>
         <input
@@ -127,16 +127,7 @@
           id="concertDate"
         />
       </fieldset>
-
-      <fieldset>
-        <label for="startTime">Start Time</label>
-        <input
-          type="time"
-          name="startTime"
-          id="startTime"
-        />
-      </fieldset>
-
+    
       <fieldset>
         <label for="ticketType">Ticket Type</label>
         <select
@@ -164,7 +155,7 @@
           </optgroup>
         </select>
       </fieldset>
-
+    
       <fieldset>
         <label for="price">Ticket Price (in CAD)</label>
         <small>Use numbers only</small>
@@ -177,7 +168,7 @@
           placeholder="e.g. 129.99"
         />
       </fieldset>
-
+    
       <fieldset>
         <label for="seatInfo">Section / Row / Seat</label>
         <input
@@ -188,101 +179,9 @@
           autocomplete="off"
         />
       </fieldset>
-
-      <fieldset>
-        <label for="orderNumber">Order / Ticket Number</label>
-        <small>Optional, helps you find your ticket later</small>
-        <input
-          type="text"
-          name="orderNumber"
-          id="orderNumber"
-          placeholder="e.g. TM-1234-5678"
-          autocomplete="off"
-        />
-      </fieldset>
-
-      <fieldset>
-        <legend>Purchase Platform</legend>
-        <small>Where did you buy this ticket?</small>
-        <label for="ticketmaster">
-          <input
-            type="radio"
-            id="ticketmaster"
-            name="platform"
-            value="Ticketmaster"
-          />
-          <span>Ticketmaster</span>
-        </label>
-        <label for="axs">
-          <input
-            type="radio"
-            id="axs"
-            name="platform"
-            value="AXS"
-          />
-          <span>AXS</span>
-        </label>
-        <label for="officialSite">
-          <input
-            type="radio"
-            id="officialSite"
-            name="platform"
-            value="Official Site"
-          />
-          <span>Official Site</span>
-        </label>
-        <label for="resale">
-          <input
-            type="radio"
-            id="resale"
-            name="platform"
-            value="Resale"
-          />
-          <span>Resale</span>
-        </label>
-        <label for="platformOther">
-          <input
-            type="radio"
-            id="platformOther"
-            name="platform"
-            value="Other"
-          />
-          <span>Other</span>
-        </label>
-      </fieldset>
-
-      <fieldset>
-        <legend>Attendance</legend>
-        <label for="isAttended">
-          <input
-            type="checkbox"
-            name="isAttended"
-            id="isAttended"
-          />
-          <span>I already attended this concert</span>
-        </label>
-        <label for="isWithFriends">
-          <input
-            type="checkbox"
-            name="isWithFriends"
-            id="isWithFriends"
-          />
-          <span>Going / went with friends</span>
-        </label>
-      </fieldset>
-
-      <fieldset>
-        <label for="hypeLevel">Excitement Level</label>
-        <small>How hyped are you for this show?</small>
-        <input
-          type="range"
-          min="0"
-          max="10"
-          name="hypeLevel"
-          id="hypeLevel"
-        />
-      </fieldset>
-
+    
+      <!-- 🔻 we removed Order Number, Platform, Attendance, Excitement Level -->
+    
       <fieldset>
         <label for="notes">Notes</label>
         <small>Special memories, expectations, or details (minimum 10 characters).</small>
@@ -296,8 +195,7 @@
         ></textarea>
         <small class="validation">Notes must be at least 10 characters.</small>
       </fieldset>
-
-      <!-- 🔘 BUTTONS THAT SUBMIT OR CANCEL -->
+    
       <fieldset>
         <button
           class="save"
@@ -314,7 +212,7 @@
           Cancel
         </button>
       </fieldset>
-    </form>
+    </form>    
   </div>
 
   <main>
