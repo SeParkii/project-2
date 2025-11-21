@@ -227,6 +227,15 @@ main,
 }
 
 
+#intro {
+  padding-left: 8rem;
+  padding-right: 8rem;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  box-sizing: border-box;
+}
+
+
 .item-actions {
   display: flex;
   gap: 1rem;
