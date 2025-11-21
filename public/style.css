@@ -121,43 +121,60 @@ header p {
 
 
 /* =============================
-   TICKET CARDS
+   TICKET CARDS – PIC2 LAYOUT
 ============================= */
 
 .item-card {
   background: #6ea7b6;
+  /* 如果你想做一点渐变，可以换成下面这一行：
+     background: linear-gradient(90deg, #6ea7b6 0%, #80aec1 100%);
+  */
   color: #ffffff;
   border-radius: 1.5rem;
-  padding: 2rem;
+  padding: 2.5rem 3rem;
   border: 1px solid #cde4ed;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1.5rem;
+
+  /* 关键：用 grid 把卡片分成上面一行(文字+日历)和下面一行(按钮) */
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "info  meta"
+    "actions actions";
+  column-gap: 2.5rem;
+  row-gap: 1.75rem;
+
   width: 100%;
 }
 
-/* Left info block */
+/* 左侧信息块 */
 .item-card .info,
 .item-info {
-  flex: 1 1 65%;
+  grid-area: info;
   text-align: left;
 }
 
 .item-card h3 {
-  font-size: 1.6rem;
-  margin: 0 0 0.5rem 0;
-  color: #fff;
+  font-size: 1.9rem;
+  margin: 0 0 0.35rem 0;
+  color: #ffffff;
+}
+
+/* 可选：副标题（比如 Concert name） */
+.item-card .subtitle {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
 }
 
 .item-info p {
-  margin: 0.3rem 0;
-  font-size: 0.95rem;
+  margin: 0.35rem 0;
+  font-size: 1rem;
 }
 
-/* Right calendar block */
+/* 右侧日历块 */
 .item-card .meta {
-  flex: 0 0 120px;
+  grid-area: meta;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -170,7 +187,7 @@ header p {
 ============================= */
 
 .calendar {
-  width: 5rem;
+  width: 6rem;
   display: flex;
   flex-direction: column;
   border-radius: 0.7rem;
@@ -189,32 +206,32 @@ header p {
 .calendar .month {
   background: #e6f6ff;
   color: #0b3d4a;
-  padding: 0.3rem 0;
+  padding: 0.4rem 0;
   font-weight: 700;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
 }
 
 .calendar .day {
   background: #ffffff;
-    color: #0b3d4a;
-  font-size: 1.55rem;
+  color: #0b3d4a;
+  font-size: 1.7rem;
   font-weight: 700;
-  padding: 0.4rem 0;
+  padding: 0.55rem 0;
 }
 
 .calendar .year {
   background: #f3fbff;
   color: #0b3d4a;
   font-weight: 700;
-  font-size: 0.75rem;
-  padding: 0.3rem 0;
+  font-size: 0.8rem;
+  padding: 0.35rem 0;
 }
 
 
 
 /* =============================
-   EDIT + DELETE BUTTONS
+   PAGE PADDING
 ============================= */
 
 main, 
@@ -226,7 +243,6 @@ main,
   box-sizing: border-box;
 }
 
-
 #intro {
   padding-left: 8rem;
   padding-right: 8rem;
@@ -236,19 +252,28 @@ main,
 }
 
 
+
+/* =============================
+   EDIT + DELETE BUTTONS
+   —— 底部中间
+============================= */
+
 .item-actions {
+  grid-area: actions;
   display: flex;
-  gap: 1rem;
-  margin-top: 1.25rem;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 0;       /* 用 row-gap 控制间距，不再往上挤 */
 }
 
 .edit-btn,
 .delete-btn {
   border: none;
-  padding: 0.55rem 1.2rem;
+  padding: 0.6rem 1.6rem;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 700;
+  font-size: 0.95rem;
 }
 
 .edit-btn {
@@ -379,6 +404,15 @@ button.cancel:hover {
   #contentArea {
     width: calc(100% - 3rem);
     grid-template-columns: 1fr;
+  }
+
+  .item-card {
+    grid-template-columns: 1fr;         /* 小屏幕上下排 */
+    grid-template-areas:
+      "info"
+      "meta"
+      "actions";
+    row-gap: 1.25rem;
   }
 
   #myForm {
