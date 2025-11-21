@@ -156,7 +156,6 @@ const calendarWidget = (date) => {
     const day = new Date(date).toLocaleString("en-CA", { day: '2-digit', timeZone: "UTC" })
     const year = new Date(date).toLocaleString("en-CA", { year: 'numeric', timeZone: "UTC" })
     return ` <div class="calendar">
-                <div class="born"><img src="./assets/birthday.svg" /></div>
                 <div class="month">${month}</div>
                 <div class="day">${day}</div> 
                 <div class="year">${year}</div>
@@ -179,8 +178,6 @@ const renderItem = (item) => {
     </div>
 
     <div class="item-info">
-      <div class="left">
-        <p><strong>Artist:</strong> ${item.artist || '-'}</p>
         <p><strong>Venue:</strong> ${item.venue || '-'}</p>
         <p><strong>City:</strong> ${item.city || '-'}</p>
         ${calendarWidget(item.concertDate)}
@@ -188,11 +185,11 @@ const renderItem = (item) => {
 
       <div class="stats">
         <div class="stat">
-          <span>Ticket Type</span>
+          <span>Ticket Type:</span>
           <span>${item.ticketType || '-'}</span>
         </div>
         <div class="stat">
-          <span>Price</span>
+          <span>Price:</span>
           <span>${item.price ? '$' + Number(item.price).toFixed(2) : '-'}</span>
         </div>
       </div>

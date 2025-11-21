@@ -23,29 +23,28 @@ body {
    HEADER BAR
 ============================= */
 
-/* Header band */ 
 header { 
-    width: 100%; 
-    background: #7ea6bd; 
-    padding: 3rem 8rem; 
-    box-sizing: border-box; 
-    position: relative; 
+  width: 100%; 
+  background: #7ea6bd; 
+  padding: 3rem 8rem; 
+  box-sizing: border-box; 
+  position: relative; 
 } 
 
 header h1 { 
-    margin: 0 0 0.5rem 0; 
-    font-size: 3.25rem; 
-    font-weight: 400; 
-    color: #051017; 
-    line-height: 1; 
-    text-align: left; 
+  margin: 0 0 0.5rem 0; 
+  font-size: 3.25rem; 
+  font-weight: 400; 
+  color: #051017; 
+  line-height: 1; 
+  text-align: left; 
 } 
 
 header p { 
-    margin: 0.5rem 0 0 0; 
-    color: rgba(5,16,23,0.9); 
-    max-width: 75rem; 
-    text-align: left; 
+  margin: 0.5rem 0 0 0; 
+  color: rgba(5,16,23,0.9); 
+  max-width: 75rem; 
+  text-align: left; 
 }
 
 
@@ -66,17 +65,17 @@ header p {
 }
 
 #createButton, .create-btn { 
-    position: absolute; 
-    right: 6rem; 
-    top: 2.25rem; 
-    padding: 0.7rem 1.6rem; 
-    background: #e6f6ff; 
-    color: #0b3d4a; 
-    border-radius: 999px; 
-    border: none; 
-    font-weight: 700; 
-    cursor: pointer; 
-    box-shadow: 0 4px 0 rgba(0,0,0,0.03); 
+  position: absolute; 
+  right: 6rem; 
+  top: 2.25rem; 
+  padding: 0.7rem 1.6rem; 
+  background: #e6f6ff; 
+  color: #0b3d4a; 
+  border-radius: 999px; 
+  border: none; 
+  font-weight: 700; 
+  cursor: pointer; 
+  box-shadow: 0 4px 0 rgba(0,0,0,0.03); 
 }
 
 
@@ -121,72 +120,89 @@ header p {
 
 
 /* =============================
-   TICKET CARDS – PIC2 LAYOUT
+   TICKET CARDS
+   Text left (single flow), calendar pinned right
 ============================= */
 
 .item-card {
   background: #6ea7b6;
-  /* 如果你想做一点渐变，可以换成下面这一行：
-     background: linear-gradient(90deg, #6ea7b6 0%, #80aec1 100%);
-  */
   color: #ffffff;
   border-radius: 1.5rem;
   padding: 2.5rem 3rem;
+  padding-right: 9rem;          /* room for the calendar on the right */
   border: 1px solid #cde4ed;
-
-  /* 关键：用 grid 把卡片分成上面一行(文字+日历)和下面一行(按钮) */
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  grid-template-rows: auto auto;
-  grid-template-areas:
-    "info  meta"
-    "actions actions";
-  column-gap: 2.5rem;
-  row-gap: 1.75rem;
-
   width: 100%;
+  position: relative;           /* anchor for absolute calendar */
 }
 
-/* 左侧信息块 */
+/* All paragraphs inside the card: smaller gaps */
+.item-card p {
+  margin: 0.18rem 0;
+  font-size: 1rem;
+}
+
+
+/* 2. Bold the words "Ticket Type" and "Price" (labels only) */
+.item-card .stat span:first-child {
+  font-weight: 700;
+}
+
+/* Remove the entire Artist row in the left info column */
+.item-card .left p:first-child {
+  display: none;
+}
+
+
+
+/* Info block (left column text) */
 .item-card .info,
 .item-info {
-  grid-area: info;
   text-align: left;
 }
 
 .item-card h3 {
   font-size: 1.9rem;
-  margin: 0 0 0.35rem 0;
+  margin: 0 0 0.3rem 0;
   color: #ffffff;
 }
 
-/* 可选：副标题（比如 Concert name） */
+/* Optional subtitle under title */
 .item-card .subtitle {
-  margin: 0 0 1.5rem 0;
-  font-size: 1.1rem;
+  margin: 0 0 0.8rem 0;
+  font-size: 1.05rem;
   opacity: 0.9;
 }
 
-.item-info p {
-  margin: 0.35rem 0;
-  font-size: 1rem;
+/* If you have a dedicated .meta wrapper, just treat it as normal text */
+.item-card .meta {
+  /* no layout rules here – let it flow with the rest of the text */
 }
 
-/* 右侧日历块 */
-.item-card .meta {
-  grid-area: meta;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* Add larger spacing between Status and Notes */
+.item-card .description {
+  margin-top: 2rem;   /* adjust this number */
 }
+
+
+/* Add spacing between artist name and the info block */
+.item-card .microchip-info {
+  margin-bottom: 2rem;   /* adjust number to your preference */
+}
+
+
 
 
 
 /* =============================
    CALENDAR WIDGET
+   Pinned to the right, vertically centered
 ============================= */
 
-.calendar {
+.item-card .calendar {
+  position: absolute;
+  right: 3rem;
+  top: 50%;
+  transform: translateY(-50%);
   width: 6rem;
   display: flex;
   flex-direction: column;
@@ -197,6 +213,7 @@ header p {
   text-align: center;
 }
 
+/* In case calendar appears outside .item-card somehow, keep generic styling */
 .calendar img {
   width: 1.3rem;
   margin: 0.25rem auto;
@@ -255,15 +272,13 @@ main,
 
 /* =============================
    EDIT + DELETE BUTTONS
-   —— 底部中间
 ============================= */
 
 .item-actions {
-  grid-area: actions;
+  margin-top: 1.75rem;
   display: flex;
   justify-content: center;
   gap: 1.5rem;
-  margin-top: 0;       /* 用 row-gap 控制间距，不再往上挤 */
 }
 
 .edit-btn,
@@ -353,23 +368,27 @@ main,
   color: #052023;
 }
 
-/* Notes field spans all 4 columns */
-#myForm textarea {
-  min-height: 10rem;
+/* Notes fieldset spans entire popover width */
+#myForm fieldset:has(#notes) {
   grid-column: 1 / -1;
 }
 
-
+/* Make the textarea tall like your layout */
+#myForm textarea {
+  min-height: 12rem;
+}
 
 /* =============================
    FORM BUTTONS (SAVE + CANCEL)
+   — full width at the bottom
 ============================= */
 
-.form-actions {
-  grid-column: 1 / -1;
+#myForm fieldset:last-of-type {
+  grid-column: 1 / -1;           /* span all 4 columns */
   display: flex;
   justify-content: center;
-  gap: 2rem;
+  gap: 2.5rem;
+  margin-top: 1.8rem;
 }
 
 button.save,
@@ -377,7 +396,7 @@ button.cancel {
   background: #e6f6ff;
   color: #052023;
   border: none;
-  padding: 0.7rem 1.6rem;
+  padding: 0.7rem 1.8rem;
   font-weight: 700;
   border-radius: 999px;
   cursor: pointer;
@@ -387,6 +406,8 @@ button.save:hover,
 button.cancel:hover {
   background: #f3fbff;
 }
+
+
 
 
 
@@ -406,13 +427,15 @@ button.cancel:hover {
     grid-template-columns: 1fr;
   }
 
+  /* small screens: let calendar drop into normal flow */
   .item-card {
-    grid-template-columns: 1fr;         /* 小屏幕上下排 */
-    grid-template-areas:
-      "info"
-      "meta"
-      "actions";
-    row-gap: 1.25rem;
+    padding-right: 3rem;
+  }
+
+  .item-card .calendar {
+    position: static;
+    transform: none;
+    margin-top: 1rem;
   }
 
   #myForm {
